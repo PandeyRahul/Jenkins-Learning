@@ -26,10 +26,17 @@ RUN wget https://www.python.org/ftp/python/3.11.0/Python-3.11.0.tgz \
     && rm -rf Python-3.11.0 \
     && rm Python-3.11.0.tgz
 
-# Set Python 3.11 as the default Python version
+# Update alternatives to prioritize Python 3.11
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.11 1 \
     && update-alternatives --install /usr/bin/python python /usr/local/bin/python3.11 1 \
-    && curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
+    && update-alternatives --set python3 /usr/local/bin/python3.11 \
+    && update-alternatives --set python /usr/local/bin/python3.11
+
+# Set environment variables to ensure Python 3.11 is used
+ENV PATH="/usr/local/bin:${PATH}"
+
+# Install pip for Python 3.11
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
 
 # Install the required packages
 RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17 \
